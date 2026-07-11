@@ -2,9 +2,89 @@
 
 @config 'tailwind.config.js';
 
-[x-cloak] {
-    display: none !important;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+    --primary:#2563eb;
+    --primary-light:#3b82f6;
+    --background:#f8fafc;
+    --card:#ffffff;
+    --border:#e2e8f0;
+    --text:#0f172a;
 }
-.grid-image .filepond--item {
-    width: calc(33.3% - 0.5em);
+
+html,
+body{
+    font-family:'Inter',sans-serif;
+    background:var(--background);
+}
+
+[x-cloak]{
+    display:none!important;
+}
+
+.fi-page{
+    background:#f8fafc;
+}
+
+.fi-main{
+    background:#f8fafc;
+}
+
+.fi-sidebar{
+    background:#0f172a!important;
+    border-right:none!important;
+}
+
+.fi-sidebar-nav{
+    padding-top:20px;
+}
+
+.fi-sidebar-item{
+    border-radius:12px;
+    margin-bottom:6px;
+}
+
+.fi-sidebar-item-active{
+    background:#2563eb!important;
+}
+
+.fi-sidebar-item-label{
+    font-weight:600;
+}
+
+.fi-topbar{
+    background:white;
+    border-bottom:1px solid #e5e7eb;
+    box-shadow:0 2px 15px rgba(0,0,0,.04);
+}
+
+.fi-section{
+    border-radius:18px;
+    border:none;
+    box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
+
+.fi-card{
+    border-radius:18px;
+    border:none;
+    box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
+
+.fi-widget{
+    border-radius:18px;
+    border:none;
+    box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
+
+.fi-btn{
+    border-radius:12px;
+}
+
+.fi-input{
+    border-radius:12px;
+}
+
+.grid-image .filepond--item{
+    width:calc(33.333% - .5em);
 }

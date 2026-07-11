@@ -15,7 +15,10 @@ class LatestAccessLogs extends BaseWidget
     use HasWidgetShield;
     protected static ?int $sort = 100;
 
-    protected int|string|array $columnSpan = 2;
+   protected int|string|array $columnSpan = [
+    'default' => 12,
+    'xl' => 8,
+];
 
     protected static function getLogNameColors(): array
     {
