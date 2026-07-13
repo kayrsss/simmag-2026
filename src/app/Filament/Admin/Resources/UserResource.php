@@ -13,9 +13,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserResource extends Resource
 {
     use HasSimmagResourceAccess;
+
 
     protected static array $navigationRoles = ['admin'];
 
@@ -31,184 +33,437 @@ class UserResource extends Resource
 
     protected static bool $useRoleRecordScope = false;
 
+
+
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Sistem';
 
-    protected static ?string $navigationLabel = 'Users';
+    protected static ?string $navigationIcon =
+        'heroicon-o-user-group';
 
-    protected static ?string $modelLabel = 'User';
 
-    protected static ?string $pluralModelLabel = 'Users';
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationGroup =
+        'Sistem';
+
+
+
+    protected static ?string $navigationLabel =
+        'Manajemen User';
+
+
+
+    protected static ?string $modelLabel =
+        'User';
+
+
+
+    protected static ?string $pluralModelLabel =
+        'Users';
+
+
 
     protected static ?int $navigationSort = 1;
 
 
 
 
-
-
-
     public static function getNavigationBadge(): ?string
     {
-        return (string) static::getModel()::count();
+        return (string) User::count();
     }
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['name', 'email', 'roles.name'];
-    }
-
-    public static function getGlobalSearchResultDetails(Model $record): array
-    {
-        return [
-            'Role' => $record->roles->pluck('name')->implode(', '),
-            'Email' => $record->email,
-        ];
-    }
-
-
-
-
-
 
 
 
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
 
-                Forms\Components\Grid::make(2)
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Nama')
-                            ->minLength(2)
-                            ->maxLength(255)
-                            ->columnSpan('full')
-                            ->required(),
+        return $form->schema([
 
-                        Forms\Components\FileUpload::make('avatar_url')
-                            ->label('Avatar')
-                            ->image()
-                            ->optimize('webp')
-                            ->imageEditor()
-                            ->imagePreviewHeight('250')
-                            ->panelAspectRatio('7:2')
-                            ->panelLayout('integrated')
-                            ->columnSpan('full'),
 
-                        Forms\Components\TextInput::make('email')
-                            ->label('Email')
-                            ->required()
-                            ->prefixIcon('heroicon-m-envelope')
-                            ->columnSpan('full')
-                            ->email()
-                            ->unique(ignoreRecord: true),
 
-                        Forms\Components\TextInput::make('password')
-                            ->label('Password')
-                            ->password()
-                            ->confirmed()
-                            ->columnSpan(1)
-                            ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $context): bool => $context === 'create'),
+            Forms\Components\Section::make('Informasi Pengguna')
 
-                        Forms\Components\TextInput::make('password_confirmation')
-                            ->label('Konfirmasi Password')
-                            ->required(fn (string $context): bool => $context === 'create')
-                            ->columnSpan(1)
-                            ->password(),
-                    ]),
+                ->schema([
 
-                Forms\Components\Section::make('Roles')
-                    ->schema([
-                        Forms\Components\Select::make('roles')
-                            ->required()
-                            ->multiple()
-                            ->relationship('roles', 'name')
-                            ->label('Roles')
-                            ->preload()
-                            ->searchable(),
-                    ])
-                    ->columns(1),
 
-            ]);
+                    Forms\Components\FileUpload::make('avatar_url')
+
+                        ->label('Foto Profil')
+
+                        ->image()
+
+                        ->avatar()
+
+                        ->directory('avatars'),
+
+
+
+
+                    Forms\Components\TextInput::make('name')
+
+                        ->label('Nama Lengkap')
+
+                        ->required()
+
+                        ->maxLength(255),
+
+
+
+
+
+                    Forms\Components\TextInput::make('email')
+
+                        ->email()
+
+                        ->required()
+
+                        ->unique(ignoreRecord:true),
+
+
+
+
+                    Forms\Components\TextInput::make('phone')
+
+                        ->label('Nomor Telepon')
+
+                        ->tel(),
+
+
+
+
+                ])
+
+                ->columns(2),
+
+
+
+
+
+            Forms\Components\Section::make('Identitas Akademik')
+
+                ->schema([
+
+
+
+                    Forms\Components\TextInput::make('identifier')
+
+                        ->label('Identifier'),
+
+
+
+
+                    Forms\Components\TextInput::make('nim')
+
+                        ->label('NIM'),
+
+
+
+
+                    Forms\Components\TextInput::make('nidn')
+
+                        ->label('NIDN'),
+
+
+
+
+                    Forms\Components\TextInput::make('nip')
+
+                        ->label('NIP'),
+
+
+
+
+                    Forms\Components\Select::make('program_study_id')
+
+                        ->relationship(
+                            'programStudy',
+                            'name'
+                        )
+
+                        ->searchable()
+
+                        ->preload(),
+
+
+
+
+                    Forms\Components\TextInput::make('institution_name')
+
+                        ->label('Institusi'),
+
+
+
+                ])
+
+                ->columns(2),
+
+
+
+
+
+            Forms\Components\Section::make('Akses Sistem')
+
+                ->schema([
+
+
+
+                    Forms\Components\Select::make('roles')
+
+                        ->relationship(
+                            'roles',
+                            'name'
+                        )
+
+                        ->multiple()
+
+                        ->preload()
+
+                        ->searchable()
+
+                        ->required(),
+
+
+
+
+
+                    Forms\Components\Toggle::make('is_active')
+
+                        ->label('Akun Aktif')
+
+                        ->default(true),
+
+
+
+
+                ])
+
+                ->columns(2),
+
+
+
+
+
+
+            Forms\Components\Section::make('Password')
+
+                ->schema([
+
+
+
+                    Forms\Components\TextInput::make('password')
+
+                        ->password()
+
+                        ->confirmed()
+
+                        ->dehydrateStateUsing(
+                            fn($state)=>
+                            filled($state)
+                            ? Hash::make($state)
+                            : null
+                        )
+
+                        ->dehydrated(
+                            fn($state)=>filled($state)
+                        )
+
+                        ->required(
+                            fn($context)=>
+                            $context==='create'
+                        ),
+
+
+
+
+                    Forms\Components\TextInput::make('password_confirmation')
+
+                        ->password(),
+
+
+
+                ])
+
+                ->columns(2),
+
+
+
+        ]);
+
     }
+
+
+
+
+
+
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
-                    ->sortable()
-                    ->searchable(),
+        return $table
+
+            ->columns([
+
+
 
                 Tables\Columns\ImageColumn::make('avatar_url')
-                    ->defaultImageUrl(url('https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mp&r=g&s=250'))
-                    ->label('Avatar')
+
+                    ->label('Foto')
+
                     ->circular(),
 
-                Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+
+
+
+
+                Tables\Columns\TextColumn::make('name')
+
+                    ->label('Nama')
+
+                    ->searchable()
+
                     ->sortable()
+
+                    ->weight('bold'),
+
+
+
+
+                Tables\Columns\TextColumn::make('identifier')
+
+                    ->label('Identifier')
+
                     ->searchable(),
+
+
+
+
 
                 Tables\Columns\TextColumn::make('roles.name')
-                    ->label('Roles')
+
+                    ->label('Role')
+
                     ->badge()
-                    ->sortable()
-                    ->searchable(),
+
+                    ->colors([
+
+                        'primary'=>'admin',
+
+                        'success'=>'mahasiswa',
+
+                        'warning'=>'dosen_pembimbing',
+
+                        'info'=>'pembimbing_lapangan',
+
+                    ]),
+
+
+
+
+                Tables\Columns\IconColumn::make('is_active')
+
+                    ->label('Status')
+
+                    ->boolean(),
+
+
+
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->date()
-                    ->sortable()
-                    ->searchable(),
+
+                    ->label('Terdaftar')
+
+                    ->dateTime('d M Y')
+
+                    ->sortable(),
+
+
+
             ])
+
+
+
+
+
             ->filters([
-                //
+
+
+                Tables\Filters\SelectFilter::make('roles')
+
+                    ->relationship(
+                        'roles',
+                        'name'
+                    ),
+
+
+
+                Tables\Filters\TernaryFilter::make('is_active')
+
+                    ->label('Status Akun'),
+
+
             ])
+
+
+
+
+
             ->actions([
+
                 Tables\Actions\ViewAction::make(),
+
                 Tables\Actions\EditAction::make(),
+
                 Tables\Actions\DeleteAction::make(),
+
             ])
+
+
+
+
+
             ->bulkActions([
+
                 Tables\Actions\BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
+
                 ]),
-            ])
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+
             ]);
+
     }
+
+
+
+
+
+
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
+
+
+
+
+
 
     public static function getPages(): array
     {
+
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+
+            'index'=>Pages\ListUsers::route('/'),
+
+            'create'=>Pages\CreateUser::route('/create'),
+
+            'edit'=>Pages\EditUser::route('/{record}/edit'),
+
         ];
+
     }
+
 }

@@ -1,90 +1,353 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
 @config 'tailwind.config.js';
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root{
-    --primary:#2563eb;
-    --primary-light:#3b82f6;
-    --background:#f8fafc;
-    --card:#ffffff;
-    --border:#e2e8f0;
-    --text:#0f172a;
+:root {
+
+    --simmag-primary: #2563eb;
+    --simmag-primary-dark: #1d4ed8;
+    --simmag-background: #f8fafc;
+    --simmag-card: #ffffff;
+    --simmag-text: #0f172a;
+
 }
+
+
 
 html,
-body{
-    font-family:'Inter',sans-serif;
-    background:var(--background);
+body {
+
+    font-family: 'Inter', sans-serif;
+
+    background:
+        var(--simmag-background);
+
 }
 
-[x-cloak]{
-    display:none!important;
+
+
+/* =========================
+   GLOBAL LAYOUT
+========================= */
+
+
+.fi-page,
+.fi-main {
+
+    background:
+        #f8fafc !important;
+
 }
 
-.fi-page{
-    background:#f8fafc;
+
+
+/* =========================
+   SIDEBAR WHITE
+========================= */
+
+
+.fi-sidebar {
+
+    background:
+        #ffffff !important;
+
+    border-right:
+        1px solid #e2e8f0 !important;
+
 }
 
-.fi-main{
-    background:#f8fafc;
+
+
+.fi-sidebar-header {
+
+    background:
+        #ffffff !important;
+
 }
 
-.fi-sidebar{
-    background:#0f172a!important;
-    border-right:none!important;
+
+
+.fi-sidebar-nav {
+
+    padding-top:
+        20px;
+
 }
 
-.fi-sidebar-nav{
-    padding-top:20px;
+
+
+/* MENU ITEM */
+
+
+.fi-sidebar-item {
+
+    border-radius:
+        14px;
+
+    margin-bottom:
+        6px;
+
+    transition:
+        all .2s ease;
+
 }
 
-.fi-sidebar-item{
-    border-radius:12px;
-    margin-bottom:6px;
+
+
+.fi-sidebar-item:hover {
+
+    background:
+        #f1f5f9 !important;
+
 }
 
-.fi-sidebar-item-active{
-    background:#2563eb!important;
+
+
+/* TEXT NORMAL */
+
+
+.fi-sidebar-item-label {
+
+    color:
+        #334155 !important;
+
+    font-weight:
+        600;
+
 }
 
-.fi-sidebar-item-label{
-    font-weight:600;
+
+
+/* ICON NORMAL */
+
+
+.fi-sidebar-item-icon {
+
+    color:
+        #64748b !important;
+
 }
 
-.fi-topbar{
-    background:white;
-    border-bottom:1px solid #e5e7eb;
-    box-shadow:0 2px 15px rgba(0,0,0,.04);
+
+
+/* ACTIVE MENU */
+
+
+.fi-sidebar-item-active {
+
+    background:
+        #2563eb !important;
+
 }
 
-.fi-section{
-    border-radius:18px;
-    border:none;
-    box-shadow:0 8px 30px rgba(0,0,0,.06);
+
+
+.fi-sidebar-item-active .fi-sidebar-item-label,
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+
+    color:
+        #ffffff !important;
+
 }
 
-.fi-card{
-    border-radius:18px;
-    border:none;
-    box-shadow:0 8px 30px rgba(0,0,0,.06);
+
+
+/* =========================
+   TOPBAR
+========================= */
+
+
+.fi-topbar {
+
+    background:
+        #ffffff !important;
+
+    border-bottom:
+        1px solid #e2e8f0;
+
+    box-shadow:
+        0 4px 20px rgba(15,23,42,.05);
+
 }
 
-.fi-widget{
-    border-radius:18px;
-    border:none;
-    box-shadow:0 8px 30px rgba(0,0,0,.06);
+
+
+/* =========================
+   CARD / SECTION / WIDGET
+========================= */
+
+
+.fi-section,
+.fi-widget,
+.fi-card {
+
+    background:
+        #ffffff;
+
+    border-radius:
+        24px;
+
+    border:
+        1px solid #e2e8f0;
+
+    box-shadow:
+        0 10px 30px rgba(15,23,42,.06);
+
+    transition:
+        .2s ease;
+
 }
 
-.fi-btn{
-    border-radius:12px;
+
+
+.fi-section:hover,
+.fi-widget:hover {
+
+    transform:
+        translateY(-2px);
+
+
+    box-shadow:
+        0 20px 40px rgba(15,23,42,.10);
+
 }
 
-.fi-input{
-    border-radius:12px;
+
+
+/* =========================
+   STAT CARD
+========================= */
+
+
+.fi-wi-stats-overview-stat {
+
+    border-radius:
+        20px;
+
 }
 
-.grid-image .filepond--item{
-    width:calc(33.333% - .5em);
+
+
+.fi-wi-stats-overview-stat-value {
+
+    font-weight:
+        800;
+
+}
+
+
+
+/* =========================
+   BUTTON
+========================= */
+
+
+.fi-btn {
+
+    border-radius:
+        14px;
+
+    font-weight:
+        600;
+
+}
+
+
+
+/* =========================
+   INPUT
+========================= */
+
+
+.fi-input {
+
+    border-radius:
+        14px;
+
+}
+
+
+
+/* =========================
+   TABLE
+========================= */
+
+
+.fi-ta {
+
+    border-radius:
+        20px;
+
+    overflow:
+        hidden;
+
+}
+
+
+
+/* =========================
+   BADGE
+========================= */
+
+
+.fi-badge {
+
+    border-radius:
+        999px;
+
+    font-weight:
+        600;
+
+}
+
+
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+
+::-webkit-scrollbar {
+
+    width:
+        8px;
+
+}
+
+
+
+::-webkit-scrollbar-track {
+
+    background:
+        #f1f5f9;
+
+}
+
+
+
+::-webkit-scrollbar-thumb {
+
+    background:
+        #cbd5e1;
+
+    border-radius:
+        999px;
+
+}
+
+
+
+/* =========================
+   FILEPOND
+========================= */
+
+
+.grid-image .filepond--item {
+
+    width:
+        calc(33.333% - .5em);
+
 }

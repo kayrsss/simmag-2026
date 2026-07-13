@@ -5,70 +5,149 @@ namespace Database\Seeders;
 use App\Models\ProgramStudy;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
+use Spatie\Permission\Models\Role;
 
 class DosenPembimbingSeeder extends Seeder
 {
     public function run(): void
     {
-        $si = ProgramStudy::where('code', 'SI')->firstOrFail();
-        $ti = ProgramStudy::where('code', 'TI')->firstOrFail();
+        $si = ProgramStudy::query()
+            ->where('code', 'SI')
+            ->firstOrFail();
 
-        $password = Hash::make('password');
+        $ti = ProgramStudy::query()
+            ->where('code', 'TI')
+            ->firstOrFail();
+
+        $role = Role::findOrCreate(
+            'dosen_pembimbing',
+            'web'
+        );
 
         $lecturers = [
-
-            // ==========================
-            // SISTEM INFORMASI
-            // ==========================
-
-            ['0410019001', 'Dr. Andi Pratama, S.Kom., M.Kom.', 'SI'],
-            ['0410019002', 'Dr. Budi Hartono, S.Kom., M.Kom.', 'SI'],
-
-            // ==========================
-            // TEKNIK INFORMATIKA
-            // ==========================
-
-            ['0410019003', 'Dr. Rina Wulandari, S.T., M.Kom.', 'TI'],
-            ['0410019004', 'Dr. Agus Setiawan, S.T., M.T.', 'TI'],
+            [
+                'nidn' => '0410019001',
+                'name' => 'Dr. Andi Pratama, S.Kom., M.Kom.',
+                'email' => 'drandipratamaskommkom@lecturer.simmag.test',
+                'program_study_id' => $si->id,
+            ],
+            [
+                'nidn' => '0410019002',
+                'name' => 'Dr. Budi Hartono, S.Kom., M.Kom.',
+                'email' => 'drbudihartonoskommkom@lecturer.simmag.test',
+                'program_study_id' => $si->id,
+            ],
+            [
+                'nidn' => '0410019003',
+                'name' => 'Dr. Rina Wulandari, S.T., M.Kom.',
+                'email' => 'drrinawulandaristmkom@lecturer.simmag.test',
+                'program_study_id' => $ti->id,
+            ],
+            [
+                'nidn' => '0410019004',
+                'name' => 'Dr. Agus Setiawan, S.T., M.T.',
+                'email' => 'dragussetiawanstmt@lecturer.simmag.test',
+                'program_study_id' => $ti->id,
+            ],
         ];
 
-        foreach ($lecturers as [$nidn, $name, $prodi]) {
+        DB::transaction(
+            function () use (
+                $lecturers,
+                $role
+            ): void {
+                foreach ($lecturers as $lecturer) {
+                    $user = User::query()
+                        ->where(function ($query) use (
+                            $lecturer
+                        ): void {
+                            $query
+                                ->where(
+                                    'nidn',
+                                    $lecturer['nidn']
+                                )
+                                ->orWhere(
+                                    'username',
+                                    $lecturer['nidn']
+                                )
+                                ->orWhere(
+                                    'identifier',
+                                    $lecturer['nidn']
+                                )
+                                ->orWhere(
+                                    'email',
+                                    $lecturer['email']
+                                );
+                        })
+                        ->first();
 
-            $programStudy = $prodi === 'SI'
-                ? $si
-                : $ti;
+                    if (! $user) {
+                        $user = new User();
+                    }
 
-            $user = User::updateOrCreate(
-                [
-                    'nidn' => $nidn,
-                ],
-                [
-                    'name' => $name,
-                    'email' => strtolower(str_replace([' ', ',', '.'], ['', '', ''], $name)) . '@lecturer.simmag.test',
+                    $user->forceFill([
+                        'name' =>
+                            $lecturer['name'],
 
-                    'username' => $nidn,
-                    'identifier' => $nidn,
+                        'email' =>
+                            $lecturer['email'],
 
-                    'nidn' => $nidn,
+                        'username' =>
+                            $lecturer['nidn'],
 
-                    'program_study_id' => $programStudy->id,
+                        'identifier' =>
+                            $lecturer['nidn'],
 
-                    'institution_name' => 'Universitas Esa Unggul',
+                        'nidn' =>
+                            $lecturer['nidn'],
 
-                    'role' => 'dosen_pembimbing',
+                        'program_study_id' =>
+                            $lecturer['program_study_id'],
 
-                    'password' => $password,
+                        'institution_name' =>
+                            'Universitas Esa Unggul',
 
-                    'email_verified_at' => now(),
+                        'role' =>
+                            'dosen_pembimbing',
 
-                    'is_active' => true,
-                ]
-            );
+                        'password' =>
+                            Hash::make('password'),
 
-            $user->syncRoles([
-                'dosen_pembimbing',
-            ]);
-        }
+                        'email_verified_at' =>
+                            now(),
+
+                        'is_active' =>
+                            true,
+                    ]);
+
+                    $user->save();
+
+                    $user->syncRoles([
+                        $role->name,
+                    ]);
+
+                    $verifiedUser = $user->fresh();
+
+                    if (
+                        ! $verifiedUser
+                        || ! Hash::check(
+                            'password',
+                            (string) $verifiedUser->password
+                        )
+                    ) {
+                        throw new RuntimeException(
+                            "Password dosen {$lecturer['nidn']} gagal diverifikasi."
+                        );
+                    }
+
+                    $this->command?->info(
+                        "VERIFIED: {$lecturer['nidn']} / password"
+                    );
+                }
+            }
+        );
     }
 }

@@ -8,30 +8,19 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Seeder Utama SIMMAG
+        |--------------------------------------------------------------------------
+        |
+        | Seeder transaksi seperti MahasiswaSeeder, MagangSeeder, LogbookSeeder,
+        | dan PenilaianSeeder tidak dijalankan otomatis agar data yang sudah
+        | tersimpan tidak dibuat ulang.
+        |
+        */
+
         $this->call([
-            RoleSeeder::class,
-
-            ProgramStudiSeeder::class,
-            PeriodeMagangSeeder::class,
-
             UserSeeder::class,
-            MahasiswaSeeder::class,
-            DosenPembimbingSeeder::class,
-
-            InstansiSeeder::class,
-            MagangSeeder::class,
-
-            KerangkaAcuanSeeder::class,
-            LogbookSeeder::class,
-            BimbinganSeeder::class,
-
-            LaporanAkhirSeeder::class,
-            PenilaianLapanganSeeder::class,
-            PenilaianDosenSeeder::class,
-
-            PengumumanSeeder::class,
-            AuditTrailSeeder::class,
-            SinkronisasiSiakadSeeder::class,
         ]);
     }
 }

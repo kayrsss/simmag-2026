@@ -40,13 +40,14 @@ class MahasiswaSeeder extends Seeder
             ['2023201001', 'Kevin Saputra', 'TI'],
             ['2023201002', 'Laila Nur Azizah', 'TI'],
             ['2023201003', 'Muhammad Rizky', 'TI'],
-            ['2023201004', 'Nabila Aulia', 'TI'],
+            ['2023201004', 'Aulia aja', 'TI'],
             ['2023201005', 'Oka Pratama', 'TI'],
             ['2023201006', 'Putri Maharani', 'TI'],
             ['2023201007', 'Rafi Kurniawan', 'TI'],
             ['2023201008', 'Salsabila Putri', 'TI'],
             ['2023201009', 'Taufik Hidayat', 'TI'],
             ['2023201010', 'Zahra Amalia', 'TI'],
+            ['2024080319', 'Citra Lestari', 'TI']
         ];
 
         foreach ($students as [$nim, $name, $prodi]) {

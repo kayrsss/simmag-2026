@@ -3,51 +3,123 @@
 namespace Database\Seeders;
 
 use App\Models\FrameworkOfReference;
-use App\Models\Internship;
 use App\Models\Logbook;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 
 class LogbookSeeder extends Seeder
 {
     public function run(): void
     {
-        $frameworks = FrameworkOfReference::with('internship')->get();
+        $frameworks = FrameworkOfReference::query()
+            ->with('internship')
+            ->whereNotNull('internship_id')
+            ->orderBy('id')
+            ->get()
+            ->groupBy('internship_id')
+            ->map(
+                fn (Collection $items): FrameworkOfReference =>
+                    $items
+                        ->sortByDesc('id')
+                        ->first()
+            );
 
         foreach ($frameworks as $framework) {
+            $internship = $framework->internship;
 
-            $start = Carbon::parse($framework->start_date);
+            if (
+                ! $internship
+                || ! $internship->student_id
+                || ! $framework->start_date
+            ) {
+                continue;
+            }
 
-            for ($i = 1; $i <= 10; $i++) {
+            $startDate = Carbon::parse(
+                $framework->start_date
+            );
 
-                Logbook::updateOrCreate(
+            for ($day = 1; $day <= 10; $day++) {
+                $activityDate = $startDate
+                    ->copy()
+                    ->addDays($day)
+                    ->toDateString();
+
+                $validatedAt = now()
+                    ->subDays(
+                        random_int(1, 10)
+                    );
+
+                Logbook::query()->updateOrCreate(
                     [
-                        'internship_id' => $framework->internship_id,
-                        'activity_date' => $start->copy()->addDays($i),
+                        'internship_id' =>
+                            $internship->id,
+
+                        'activity_date' =>
+                            $activityDate,
                     ],
                     [
-                        'framework_of_reference_id' => $framework->id,
+                        'framework_of_reference_id' =>
+                            $framework->id,
 
-                        'description' => match ($i) {
-                            1 => 'Orientasi lingkungan kerja dan pengenalan SOP.',
-                            2 => 'Observasi proses bisnis instansi.',
-                            3 => 'Analisis kebutuhan sistem.',
-                            4 => 'Perancangan solusi aplikasi.',
-                            5 => 'Implementasi modul utama.',
-                            6 => 'Perbaikan bug aplikasi.',
-                            7 => 'Pengujian fitur.',
-                            8 => 'Penyusunan dokumentasi.',
-                            9 => 'Presentasi hasil pekerjaan.',
-                            default => 'Evaluasi hasil kegiatan magang.',
+                        'student_id' =>
+                            $internship->student_id,
+
+                        'activity' => match ($day) {
+                            1 =>
+                                'Orientasi lingkungan kerja dan pengenalan SOP.',
+
+                            2 =>
+                                'Observasi proses bisnis instansi.',
+
+                            3 =>
+                                'Analisis kebutuhan sistem.',
+
+                            4 =>
+                                'Perancangan solusi aplikasi.',
+
+                            5 =>
+                                'Implementasi modul utama.',
+
+                            6 =>
+                                'Perbaikan bug aplikasi.',
+
+                            7 =>
+                                'Pengujian fitur.',
+
+                            8 =>
+                                'Penyusunan dokumentasi.',
+
+                            9 =>
+                                'Presentasi hasil pekerjaan.',
+
+                            default =>
+                                'Evaluasi hasil kegiatan magang.',
                         },
 
-                        'attachment_file' => null,
+                        'evidence_name' =>
+                            null,
 
-                        'status' => 'Tervalidasi',
+                        'evidence_path' =>
+                            null,
 
-                        'validation_notes' => 'Aktivitas sesuai dengan rencana kerja.',
+                        'status' =>
+                            Logbook::STATUS_VALIDATED,
 
-                        'validated_at' => now()->subDays(rand(1, 10)),
+                        'review_note' =>
+                            'Aktivitas sesuai dengan rencana kerja.',
+
+                        'submitted_at' =>
+                            $validatedAt
+                                ->copy()
+                                ->subHours(4),
+
+                        'validated_at' =>
+                            $validatedAt,
+
+                        'validated_by' =>
+                            null,
                     ]
                 );
             }
